@@ -1,0 +1,142 @@
+body {
+  background-color: var(--background);
+  font-family: "Atkinson Hyperlegible", system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 1rem;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  margin-right: auto;
+  width: 90%;
+  max-width: 75ch;
+}
+
+a:link {
+    color: var(--link);
+}
+
+a:visited {
+    color: var(--link-visited);
+}
+
+p {
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
+    color: var(--black);
+}
+
+h1 {
+    margin-top: 0.5rem;
+    color: var(--blue);
+}
+
+h3, h2 {
+    margin-bottom: 0rem;
+    color: var(--blue);
+}
+
+pre {
+    margin-top: 0.5rem;
+    white-space: pre-wrap;
+}
+
+nav {
+  background: #FFBF00;
+  padding: 0.2rem;
+}
+
+nav a {
+    text-align:center;
+    color: var(--pink);
+}
+
+.hero-text {
+    order: 2;
+}
+
+.hero-img {
+    order: 1;
+}
+
+@media screen and (min-width:768px) {
+    .hero-text {
+        order: 1;
+    }
+
+    .hero-img {
+        order: 2;
+    }
+}
+
+@media screen and (min-width:768px) {
+    body {
+        width: 70%;
+    }
+}
+
+@media screen and (min-width:1920px) {
+    body {
+        width: 60%;
+    }
+}
+
+@media screen and (min-width:2304px) {
+    body {
+        width: 50%;
+    }
+}
+
+.main {
+    background-color: var(--frame-light);
+    margin: 1vw;
+    min-width: 98%;
+}
+
+@media screen and (min-width:768px) {
+    .main {
+        /*margin-top: 5rem;*/
+        margin-bottom: auto;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+img {
+    width: 15rem;
+    height: 15rem;
+    border-radius: 5%;
+}
+
+.footer {
+    padding: 1rem;
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.footer p {
+    line-height: 1rem;
+}
+
+.footer img {
+    border-radius: 0;
+    width: 88px;
+    height: 31px;
+    margin: 0;
+    image-rendering: auto;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: -webkit-optimize-contrast;
+}
+
+:root {
+  --black: #0f0f0f;
+  --green: #4ee06d;
+  --blue: #74bcca;
+  --pink: #fe98af;
+  --orange: #ffcc8f;
+  --background: #282828;
+  --frame: #c3bdb4;
+  --frame-light: #eee;
+  --links: #ceefff;
+  --links-visited: #6300c0;
+}
