@@ -41,7 +41,7 @@ func renderPage(f string) {
 	if e := t.Execute(&buf, D{T: template.HTML(b)}); e != nil {
 		log.Fatal("couldn't execute base tmpl + " + f)
 	}
-	os.WriteFile("s/"+f, buf.Bytes(), 0o644)
+	os.WriteFile(f, buf.Bytes(), 0o644)
 }
 
 func renderBlog() {
