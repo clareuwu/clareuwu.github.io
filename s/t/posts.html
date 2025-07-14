@@ -1,9 +1,7 @@
-<h1>All Blog Posts</h1>
-  {{range .}}
+<h1>All Blog Posts</h1>   {{range .}}
       <div class="blog-post">
           <h2><a href="/posts/{{.Filename}}">{{.Title}}</a></h2>
           <span class="date">{{.Date.Format "January 2, 2006"}}</span>
-      </div>
-  {{else}}
+      </div>   {{else}}
       <p>No blog posts found.</p>
   {{end}}
