@@ -1,11 +1,9 @@
 <h1>All Blog Posts</h1>
-
-        {{/* The .Range action iterates over slices, arrays, maps, and channels. */}}
-        {{range .}}
-            <div class="blog-post">
-                <h2>{{.Title}}</h2>
-                <span class="date">{{.Date.Format "January 2, 2006"}}</span>
-            </div>
-        {{else}}
-            <p>No blog posts found.</p>
-        {{end}}
+  {{range .}}
+      <div class="blog-post">
+          <h2>{{.Title}}</h2>
+          <span class="date">{{.Date.Format "January 2, 2006"}}</span>
+      </div>
+  {{else}}
+      <p>No blog posts found.</p>
+  {{end}}

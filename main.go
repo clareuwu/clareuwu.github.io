@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"html/template"
 	"io/fs"
 	"log"
@@ -27,23 +26,33 @@ type (
 
 func main() {
 	renderBlog()
-	renderPage("index.html")
+	renderWritePage("s/t/base.html", "s/t/index.html", "index.html")
 }
 
-func renderPage(f string) {
-	t, e := template.ParseFiles("s/t/base.html")
+func renderWritePage(tmpl, f, out string) {
+	b, e := os.ReadFile(f)
 	if e != nil {
-		log.Fatal("couldn't open base template")
+		log.Fatal("couldn't open file:" + f)
 	}
-	b, e := os.ReadFile("s/t/" + f)
+	buf := renderData(tmpl, D{T: template.HTML(b)})
+	os.WriteFile(out, buf.Bytes(), 0o644)
+}
+
+func renderBase(data []byte) bytes.Buffer {
+	buf := renderData("s/t/base.html", D{T: template.HTML(data)})
+	return buf
+}
+
+func renderData(tmpl string, data any) bytes.Buffer {
+	t, e := template.ParseFiles(tmpl)
 	if e != nil {
-		log.Fatal("couldn't open " + f)
+		log.Fatal("couldn't open template:" + tmpl)
 	}
 	var buf bytes.Buffer
-	if e := t.Execute(&buf, D{T: template.HTML(b)}); e != nil {
-		log.Fatal("couldn't execute base tmpl + " + f)
+	if e := t.Execute(&buf, data); e != nil {
+		log.Fatal("couldn't execute template: " + tmpl)
 	}
-	os.WriteFile(f, buf.Bytes(), 0o644)
+	return buf
 }
 
 func renderBlog() {
@@ -92,13 +101,7 @@ func renderBlog() {
 	})
 	slices.SortFunc(posts, func(a, b M) int { return a.Date.Compare(b.Date) })
 	slices.Reverse(posts)
-	postst, e := template.ParseFiles("s/t/posts.html")
-	if e != nil {
-		log.Fatal("couldn't open posts template")
-	}
-	var postsbuf bytes.Buffer
-	if e := postst.Execute(&postsbuf, posts); e != nil {
-		log.Fatal("couldn't execute posts template")
-	}
-	fmt.Print(postsbuf.String())
+	renderedPosts := renderData("s/t/posts.html", posts)
+	renderedPosts = renderBase(renderedPosts.Bytes())
+	os.WriteFile("posts.html", renderedPosts.Bytes(), 0o644)
 }
