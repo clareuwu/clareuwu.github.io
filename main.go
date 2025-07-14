@@ -2,11 +2,13 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 
@@ -83,9 +85,20 @@ func renderBlog() {
 		if e := t.Execute(&out, D{T: template.HTML(b.Bytes())}); e != nil {
 			return e
 		}
-		o := filepath.Join("s", meta.Filename+".html")
+		o := filepath.Join("posts", meta.Filename+".html")
 		os.WriteFile(o, out.Bytes(), 0o644)
 
 		return nil
 	})
+	slices.SortFunc(posts, func(a, b M) int { return a.Date.Compare(b.Date) })
+	slices.Reverse(posts)
+	postst, e := template.ParseFiles("s/t/posts.html")
+	if e != nil {
+		log.Fatal("couldn't open posts template")
+	}
+	var postsbuf bytes.Buffer
+	if e := postst.Execute(&postsbuf, posts); e != nil {
+		log.Fatal("couldn't execute posts template")
+	}
+	fmt.Print(postsbuf.String())
 }
