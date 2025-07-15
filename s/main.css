@@ -41,13 +41,19 @@ pre {
 }
 
 nav {
-  background: #FFBF00;
   padding: 0.2rem;
+  display: flex;
+  flex-flow: row wrap;
 }
 
 nav a {
     text-align:center;
     color: var(--pink);
+    padding: 0.2rem;
+    background: #ffbf00;
+    margin: 0.1rem;
+    text-decoration: none;
+    flex: 1 1 auto;
 }
 
 .hero-text {
@@ -87,7 +93,7 @@ nav a {
 }
 
 .main {
-    background-color: var(--frame-light);
+    /*background-color: var(--frame-light);*/
     margin: 1vw;
     min-width: 98%;
 }
@@ -130,13 +136,21 @@ img {
 
 :root {
   --black: #0f0f0f;
-  --green: #4ee06d;
-  --blue: #74bcca;
+  --green: #216609;
+  --blue: #1E6FCC;
   --pink: #fe98af;
   --orange: #ffcc8f;
-  --background: #282828;
+  --red: #CC3E28;
+  --yellow: #B58900;
+  --purple: #5C21A5;
+  --cyan: #158c86;
+  --white: #AAAAAA;
+
+  /*--background: #282828;*/
+  --background: #F2EEDE;
   --frame: #c3bdb4;
   --frame-light: #eee;
+  --highlight: #D8D5C7;
   --links: #ceefff;
   --links-visited: #6300c0;
 }
