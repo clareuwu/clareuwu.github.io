@@ -21,7 +21,7 @@ type (
 		Title    string    `yaml:"title"`
 		Date     time.Time `yaml:"date"`
 		Filename string
-		T     []byte
+		T        template.HTML
 	}
 )
 
@@ -82,11 +82,11 @@ func renderBlog() {
 		}
 		meta.Filename = strings.TrimSuffix(d.Name(), ".md")
 
-		var buf, out bytes.Buffer
-		if e := goldmark.Convert(rest, &buf); e != nil {
+		var restParsed, buf, out bytes.Buffer
+		if e := goldmark.Convert(rest, &restParsed); e != nil {
 			return e
 		}
-		meta.T = buf.Bytes()
+		meta.T = template.HTML(restParsed.Bytes())
 		posts = append(posts, meta)
 		if e := post.Execute(&buf, meta); e != nil {
 			return e
