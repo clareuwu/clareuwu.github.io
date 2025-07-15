@@ -21,6 +21,7 @@ type (
 		Title    string    `yaml:"title"`
 		Date     time.Time `yaml:"date"`
 		Filename string
+		T     []byte
 	}
 )
 
@@ -80,13 +81,14 @@ func renderBlog() {
 			return e
 		}
 		meta.Filename = strings.TrimSuffix(d.Name(), ".md")
-		posts = append(posts, meta)
 
 		var buf, out bytes.Buffer
-		if e := post.Execute(&buf, meta); e != nil {
+		if e := goldmark.Convert(rest, &buf); e != nil {
 			return e
 		}
-		if e := goldmark.Convert(rest, &buf); e != nil {
+		meta.T = buf.Bytes()
+		posts = append(posts, meta)
+		if e := post.Execute(&buf, meta); e != nil {
 			return e
 		}
 		b := bytes.NewBuffer(bytes.TrimSpace(buf.Bytes()))
