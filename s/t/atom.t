@@ -3,7 +3,7 @@
   <title>claresies blog umu</title>
   <link href="clare.fyi" />
   <id>urn:uuid:32C0EBDC-D245-44D6-B4CA-D96966288E41</id>
-  <updated>{{.Updated.Format "January 2, 2006 03:04 PM"}}</updated>
+  <updated>{{.Updated}}</updated>
   <author>
     <name>clare bear</name>
   </author>

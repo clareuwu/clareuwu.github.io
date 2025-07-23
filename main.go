@@ -25,7 +25,7 @@ type (
 		T        template.HTML
 	}
 	Atom struct {
-		Updated time.Time
+		Updated string
 		Posts   []M
 	}
 )
@@ -111,6 +111,6 @@ func renderBlog() {
 	renderedPosts := renderData("s/t/posts.html", posts)
 	renderedPosts = renderBase(renderedPosts.Bytes())
 	os.WriteFile("posts.html", renderedPosts.Bytes(), 0o644)
-	renderedAtom := renderData("s/t/atom.t", Atom{time.Now(), posts})
+	renderedAtom := renderData("s/t/atom.t", Atom{time.Now().Format(time.RFC3339), posts})
 	os.WriteFile("feed.xml", renderedAtom.Bytes(), 0o644)
 }
