@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	tt "text/template"
 	"time"
 
 	"github.com/adrg/frontmatter"
@@ -22,6 +23,10 @@ type (
 		Date     time.Time `yaml:"date"`
 		Filename string
 		T        template.HTML
+	}
+	Atom struct {
+		Updated time.Time
+		Posts   []M
 	}
 )
 
@@ -45,7 +50,7 @@ func renderBase(data []byte) bytes.Buffer {
 }
 
 func renderData(tmpl string, data any) bytes.Buffer {
-	t, e := template.ParseFiles(tmpl)
+	t, e := tt.ParseFiles(tmpl)
 	if e != nil {
 		log.Fatal("couldn't open template:" + tmpl)
 	}
@@ -106,4 +111,6 @@ func renderBlog() {
 	renderedPosts := renderData("s/t/posts.html", posts)
 	renderedPosts = renderBase(renderedPosts.Bytes())
 	os.WriteFile("posts.html", renderedPosts.Bytes(), 0o644)
+	renderedAtom := renderData("s/t/atom.t", Atom{time.Now(), posts})
+	os.WriteFile("feed.xml", renderedAtom.Bytes(), 0o644)
 }

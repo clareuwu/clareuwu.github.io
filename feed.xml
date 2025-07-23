@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>claresies blog umu</title>
+  <link href="clare.fyi" />
+  <id>urn:uuid:32C0EBDC-D245-44D6-B4CA-D96966288E41</id>
+  <updated>July 22, 2025</updated>
+  <author>
+    <name>clare bear</name>
+  </author>
+  
+  <entry>
+    <title>Test! :3</title>
+    <link href="https://clare.fyi/posts/test"/>
+    <id>clare.fyi/posts/test</id>
+    <published>May 4, 2025</published>
+  </entry>
+  
+</feed>
