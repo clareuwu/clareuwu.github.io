@@ -48,15 +48,21 @@ function formatFieldValue(field, value) {
   return String(value);
 }
 
+// Run fn, alerting the user and logging on failure instead of throwing
+async function withErrorAlert(action, fn, message) {
+  try {
+    return await fn();
+  } catch (error) {
+    console.error(`Failed to ${action}:`, error);
+    alert(message || `Failed to ${action}. Please try again.`);
+  }
+}
+
 const UNITS = ['mg', 'g', 'kg', 'ml', 'L', 'oz', 'mins', 'hrs', 'days', 'times', 'pills'];
 
 document.addEventListener('alpine:init', () => {
-  // Expose units for the template
-  window.TRACKER_UNITS = UNITS;
-
   Alpine.data('appData', () => ({
     // ===== State =====
-    ready: false,
     currentMonth: new Date(),
     selectedDate: new Date(),
     eventTypes: [],
@@ -96,13 +102,14 @@ document.addEventListener('alpine:init', () => {
         return;
       }
       await this.loadData();
-      this.ready = true;
     },
 
     async loadData() {
       try {
-        this.eventTypes = await db.getAllEventTypes();
-        this.events = await db.getAllEvents();
+        [this.eventTypes, this.events] = await Promise.all([
+          db.getAllEventTypes(),
+          db.getAllEvents()
+        ]);
       } catch (error) {
         console.error('Failed to load data:', error);
       }
@@ -303,14 +310,11 @@ document.addEventListener('alpine:init', () => {
         if (existing?.createdAt) eventData.createdAt = existing.createdAt;
       }
 
-      try {
+      await withErrorAlert('save event', async () => {
         await db.saveEvent(eventData);
         await this.loadData();
         this.closeEventForm();
-      } catch (error) {
-        console.error('Failed to save event:', error);
-        alert('Failed to save event. Please try again.');
-      }
+      });
     },
 
     closeEventForm() {
@@ -319,13 +323,10 @@ document.addEventListener('alpine:init', () => {
 
     async deleteEvent(eventId) {
       if (!confirm('Are you sure you want to delete this event?')) return;
-      try {
+      await withErrorAlert('delete event', async () => {
         await db.deleteEvent(eventId);
         await this.loadData();
-      } catch (error) {
-        console.error('Failed to delete event:', error);
-        alert('Failed to delete event. Please try again.');
-      }
+      });
     },
 
     // ===== Type manager =====
@@ -362,7 +363,6 @@ document.addEventListener('alpine:init', () => {
         type: 'numeric',
         unit: 'mg',
         optionsText: '',
-        options: [],
         required: true
       });
     },
@@ -381,7 +381,6 @@ document.addEventListener('alpine:init', () => {
           name: f.name,
           type: f.type,
           unit: f.unit || 'mg',
-          options: f.options || [],
           optionsText: f.options ? f.options.join(', ') : '',
           required: !!f.required
         }))
@@ -424,14 +423,11 @@ document.addEventListener('alpine:init', () => {
         if (existing?.createdAt) typeData.createdAt = existing.createdAt;
       }
 
-      try {
+      await withErrorAlert('save event type', async () => {
         await db.saveEventType(typeData);
         await this.loadData();
         this.resetTypeForm();
-      } catch (error) {
-        console.error('Failed to save event type:', error);
-        alert('Failed to save event type. Please try again.');
-      }
+      });
     },
 
     async deleteType(typeId) {
@@ -441,15 +437,12 @@ document.addEventListener('alpine:init', () => {
       } else if (!confirm('Delete this event type?')) {
         return;
       }
-      try {
+      await withErrorAlert('delete event type', async () => {
         await Promise.all(typeEvents.map(e => db.deleteEvent(e.id)));
         await db.deleteEventType(typeId);
         await this.loadData();
         if (this.typeForm.editingId === typeId) this.resetTypeForm();
-      } catch (error) {
-        console.error('Failed to delete event type:', error);
-        alert('Failed to delete event type. Please try again.');
-      }
+      });
     },
 
     // ===== Settings =====
@@ -462,7 +455,7 @@ document.addEventListener('alpine:init', () => {
     },
 
     async exportData() {
-      try {
+      await withErrorAlert('export data', async () => {
         const data = await db.exportAll();
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -471,10 +464,7 @@ document.addEventListener('alpine:init', () => {
         a.download = `habit-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
         a.click();
         URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error('Failed to export data:', error);
-        alert('Failed to export data. Please try again.');
-      }
+      });
     },
 
     triggerImport() {
@@ -488,25 +478,21 @@ document.addEventListener('alpine:init', () => {
         e.target.value = '';
         return;
       }
-      try {
+      await withErrorAlert('import data', async () => {
         const text = await file.text();
         const data = JSON.parse(text);
         await db.clearAll();
         if (Array.isArray(data.eventTypes)) {
-          for (const type of data.eventTypes) await db.saveEventType(type);
+          await Promise.all(data.eventTypes.map(type => db.saveEventType(type)));
         }
         if (Array.isArray(data.events)) {
-          for (const event of data.events) await db.saveEvent(event);
+          await Promise.all(data.events.map(event => db.saveEvent(event)));
         }
         await this.loadData();
         alert('Data imported successfully!');
         this.closeSettings();
-      } catch (error) {
-        console.error('Failed to import data:', error);
-        alert('Failed to import data. Please check the file format.');
-      } finally {
-        e.target.value = '';
-      }
+      }, 'Failed to import data. Please check the file format.');
+      e.target.value = '';
     }
   }));
 });

@@ -65,10 +65,10 @@ This is a Progressive Web App for tracking habits, medication dosages, and custo
 
 ### IndexedDB Structure
 - Database: `habitTracker` v1
-- Object Stores:
-  - `eventTypes`: keyPath "id", indexes on "name", "createdAt"
-  - `events`: keyPath "id", indexes on "typeId", "datetime", compound ["typeId", "datetime"]
-  - `settings`: keyPath "key" (for app preferences)
+- Object Stores (no indexes — app loads everything and filters/sorts in memory):
+  - `eventTypes`: keyPath "id"
+  - `events`: keyPath "id"
+- `db.js` wraps every store op through a single `_run(storeName, mode, fn)` helper.
 
 ## File Structure
 ```
@@ -81,10 +81,7 @@ This is a Progressive Web App for tracking habits, medication dosages, and custo
 │   └── track.css          # Minimal styles, inherit from /s/main.css
 ├── js/
 │   ├── app.js             # THE single Alpine component (appData): state + getters + methods
-│   ├── db.js              # IndexedDB wrapper
-│   └── utils/             # (currently unused by app.js — helpers are inlined in app.js)
-│       ├── date.js        # Date helpers
-│       └── storage.js     # Export/import, auto-backup
+│   └── db.js              # IndexedDB wrapper
 └── icons/
     ├── favicon.png
     ├── icon-192.png

@@ -3,7 +3,7 @@
  * Enables offline functionality and caching
  */
 
-const CACHE_NAME = 'habit-tracker-v2';
+const CACHE_NAME = 'habit-tracker-v3';
 const urlsToCache = [
   '/track/',
   '/track/index.html',
@@ -95,16 +95,13 @@ self.addEventListener('fetch', (event) => {
         }).catch((error) => {
           console.error('[SW] Fetch failed:', error);
 
-          // Return offline page if available
-          return caches.match('/track/offline.html').catch(() => {
-            // No offline page, return basic offline response
-            return new Response('Offline - please check your connection', {
-              status: 503,
-              statusText: 'Service Unavailable',
-              headers: new Headers({
-                'Content-Type': 'text/plain'
-              })
-            });
+          // Network unavailable and nothing cached - basic offline response
+          return new Response('Offline - please check your connection', {
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: new Headers({
+              'Content-Type': 'text/plain'
+            })
           });
         });
       })
