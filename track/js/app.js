@@ -390,7 +390,6 @@ document.addEventListener('alpine:init', () => {
     async saveType() {
       const form = this.typeForm;
       if (!form.name.trim()) { alert('Please enter a type name'); return; }
-      if (form.fields.length === 0) { alert('Please add at least one field'); return; }
 
       for (const field of form.fields) {
         if (!field.name.trim()) { alert('All fields must have names'); return; }
