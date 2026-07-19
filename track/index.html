@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Tracker">
+    <title>Habit Tracker</title>
+
+    <link rel="manifest" href="/track/manifest.json">
+    <link rel="stylesheet" href="/s/main.css">
+    <link rel="stylesheet" href="/track/css/track.css">
+
+    <link rel="icon" type="image/png" sizes="48x48" href="/track/icons/favicon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/track/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/track/icons/icon-192.png">
+
+    <script type="module" src="/track/js/app.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+    <div id="app" x-data="appData">
+        <header>
+            <h1>Habit Tracker</h1>
+            <div class="header-actions">
+                <button @click="openTypeManager" class="btn-secondary">Manage Types</button>
+                <button @click="openSettings" class="btn-secondary">Settings</button>
+            </div>
+        </header>
+
+        <main>
+            <section id="calendar-section">
+                <div class="calendar-header">
+                    <button @click="prevMonth" class="btn-nav">&larr;</button>
+                    <h2 x-text="currentMonthLabel"></h2>
+                    <button @click="nextMonth" class="btn-nav">&rarr;</button>
+                    <button @click="goToToday" class="btn-today">Today</button>
+                </div>
+                <div id="calendar">
+                    <div class="calendar-grid">
+                        <template x-for="name in weekdays" :key="name">
+                            <div class="calendar-day-header" x-text="name"></div>
+                        </template>
+                        <template x-for="d in calendarDays" :key="d.key">
+                            <div class="calendar-day"
+                                 :class="{ 'other-month': d.isOtherMonth, 'today': d.isToday, 'selected': d.isSelected }"
+                                 @click="selectDate(d.date)">
+                                <div class="day-number" x-text="d.day"></div>
+                                <div class="day-indicators" x-show="d.dots.length">
+                                    <template x-for="(color, i) in d.dots" :key="i">
+                                        <span class="event-dot" :style="`background-color: ${color};`"></span>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </section>
+
+            <section id="event-list-section">
+                <div class="event-list-header">
+                    <h3 x-text="selectedDateLabel"></h3>
+                    <button @click="openEventForm" class="btn-primary">+ Add Event</button>
+                </div>
+                <div id="event-list">
+                    <template x-if="selectedDayEvents.length === 0">
+                        <div class="empty-state">No events for this day</div>
+                    </template>
+                    <template x-for="ev in selectedDayEvents" :key="ev.id">
+                        <div class="event-item">
+                            <div class="event-color" :style="`background-color: ${ev.color};`"></div>
+                            <div class="event-content">
+                                <div class="event-type" x-text="ev.typeName"></div>
+                                <div class="event-datetime" x-text="ev.time"></div>
+                                <div class="event-fields" x-show="ev.fields.length">
+                                    <template x-for="f in ev.fields" :key="f.name">
+                                        <div class="event-field">
+                                            <strong x-text="f.name + ':'"></strong>
+                                            <span x-text="' ' + f.value"></span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="event-actions">
+                                <button @click="editEvent(ev.raw)" class="btn-secondary">Edit</button>
+                                <button @click="deleteEvent(ev.id)" class="btn-delete">Delete</button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </section>
+        </main>
+
+        <!-- Event Form Modal -->
+        <div x-show="showEventForm" x-cloak class="modal-overlay" @click.self="closeEventForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 x-text="eventForm.mode === 'add' ? 'Add Event' : 'Edit Event'"></h3>
+                    <button @click="closeEventForm" class="btn-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Event Type</label>
+                        <select x-model="eventForm.typeId" @change="onEventTypeChange">
+                            <option value="">Select type...</option>
+                            <template x-for="t in eventTypes" :key="t.id">
+                                <option :value="t.id" x-text="t.name"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date &amp; Time</label>
+                        <input type="datetime-local" x-model="eventForm.datetime">
+                    </div>
+
+                    <template x-if="eventFormType">
+                        <div>
+                            <template x-for="field in eventFormType.fields" :key="field.id">
+                                <div class="form-group">
+                                    <label>
+                                        <span x-text="field.name"></span>
+                                        <span x-show="field.required" style="color: red;"> *</span>
+                                    </label>
+
+                                    <template x-if="field.type === 'numeric'">
+                                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                            <input type="number" step="any" style="flex: 1;"
+                                                   x-model="eventForm.fieldValues[field.id]"
+                                                   :placeholder="'Enter ' + field.name">
+                                            <span x-show="field.unit" x-text="field.unit"></span>
+                                        </div>
+                                    </template>
+
+                                    <template x-if="field.type === 'category'">
+                                        <select x-model="eventForm.fieldValues[field.id]">
+                                            <option value="">Select...</option>
+                                            <template x-for="opt in field.options" :key="opt">
+                                                <option :value="opt" x-text="opt"></option>
+                                            </template>
+                                        </select>
+                                    </template>
+
+                                    <template x-if="field.type === 'text'">
+                                        <textarea x-model="eventForm.fieldValues[field.id]"
+                                                  :placeholder="'Enter ' + field.name"></textarea>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+
+                    <template x-if="!eventForm.typeId">
+                        <div class="empty-state">Please select an event type</div>
+                    </template>
+
+                    <div class="form-actions">
+                        <button @click="closeEventForm" class="btn-secondary">Cancel</button>
+                        <button @click="saveEvent" class="btn-primary">Save Event</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Type Manager Modal -->
+        <div x-show="showTypeManager" x-cloak class="modal-overlay" @click.self="closeTypeManager">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Manage Event Types</h3>
+                    <button @click="closeTypeManager" class="btn-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <template x-if="eventTypes.length === 0">
+                        <div class="empty-state">No event types yet. Create one below!</div>
+                    </template>
+                    <template x-if="eventTypes.length > 0">
+                        <div class="type-list">
+                            <template x-for="t in eventTypes" :key="t.id">
+                                <div class="type-item">
+                                    <div class="type-color-box" :style="`background-color: ${t.color};`"></div>
+                                    <div class="type-info">
+                                        <div class="type-name" x-text="t.name"></div>
+                                        <div class="type-fields" x-text="fieldsSummary(t)"></div>
+                                    </div>
+                                    <div class="type-actions">
+                                        <button @click="editType(t)" class="btn-secondary">Edit</button>
+                                        <button @click="deleteType(t.id)" class="btn-delete">Delete</button>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+
+                    <div style="margin-top: 1rem;">
+                        <h4 x-text="typeForm.editingId ? 'Edit Type' : 'Create New Type'"></h4>
+
+                        <div class="form-group">
+                            <label>Type Name</label>
+                            <input type="text" x-model="typeForm.name" placeholder="e.g. Medication, Exercise">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Color</label>
+                            <input type="color" x-model="typeForm.color">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Fields</label>
+                            <div class="field-builder">
+                                <template x-for="(field, index) in typeForm.fields" :key="field.id">
+                                    <div class="field-item">
+                                        <input type="text" x-model="field.name" placeholder="Field name">
+
+                                        <select x-model="field.type">
+                                            <option value="numeric">Numeric</option>
+                                            <option value="category">Category</option>
+                                            <option value="text">Text</option>
+                                        </select>
+
+                                        <template x-if="field.type === 'numeric'">
+                                            <select x-model="field.unit">
+                                                <option value="">No unit</option>
+                                                <template x-for="u in units" :key="u">
+                                                    <option :value="u" x-text="u"></option>
+                                                </template>
+                                            </select>
+                                        </template>
+
+                                        <template x-if="field.type === 'category'">
+                                            <input type="text" x-model="field.optionsText"
+                                                   placeholder="Options (comma-separated)">
+                                        </template>
+
+                                        <label style="display: flex; align-items: center; gap: 0.25rem;">
+                                            <input type="checkbox" x-model="field.required">
+                                            Required
+                                        </label>
+
+                                        <button @click="removeTypeField(index)" class="btn-delete">&times;</button>
+                                    </div>
+                                </template>
+
+                                <button @click="addTypeField" class="btn-secondary" style="width: 100%;">+ Add Field</button>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button @click="resetTypeForm" class="btn-secondary">Clear</button>
+                            <button @click="saveType" class="btn-primary" x-text="typeForm.editingId ? 'Update Type' : 'Save Type'"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div x-show="showSettings" x-cloak class="modal-overlay" @click.self="closeSettings">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Settings</h3>
+                    <button @click="closeSettings" class="btn-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-content">
+                        <div class="setting-group">
+                            <h4>Data Management</h4>
+                            <button @click="exportData" class="btn-primary">Export Data (JSON)</button>
+                            <button @click="triggerImport" class="btn-secondary">Import Data</button>
+                            <input type="file" x-ref="importFile" accept=".json" style="display: none;" @change="importData">
+                        </div>
+                        <div class="setting-group">
+                            <h4>About</h4>
+                            <p>Habit Tracker v1.0</p>
+                            <p>Local-first event tracking</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/track/sw.js')
+                    .then(registration => console.log('SW registered:', registration))
+                    .catch(error => console.log('SW registration failed:', error));
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,484 @@
+/**
+ * Habit Tracker Styles
+ * Minimal styling, inherits from parent site
+ */
+
+/* ===== Base ===== */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  padding: 0;
+  touch-action: manipulation;
+}
+
+#app {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* ===== Header ===== */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ===== Buttons ===== */
+button {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 1rem;
+  border: 1px solid currentColor;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  touch-action: manipulation;
+}
+
+button:active {
+  opacity: 0.7;
+}
+
+.btn-primary {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #000;
+  border-color: #000;
+}
+
+.btn-nav {
+  font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+}
+
+.btn-today {
+  padding: 0.5rem 1rem;
+}
+
+.btn-close {
+  font-size: 1.5rem;
+  border: none;
+  padding: 0;
+  width: 44px;
+  height: 44px;
+}
+
+.btn-delete {
+  background: #dc3545;
+  color: #fff;
+  border-color: #dc3545;
+}
+
+/* ===== Calendar ===== */
+#calendar-section {
+  margin-bottom: 2rem;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.calendar-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  flex: 1;
+  min-width: 150px;
+}
+
+#calendar {
+  border: 1px solid #ddd;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: #ddd;
+}
+
+.calendar-day-header {
+  padding: 0.5rem;
+  text-align: center;
+  font-weight: bold;
+  background: #f5f5f5;
+  font-size: 0.9rem;
+}
+
+.calendar-day {
+  min-height: 60px;
+  padding: 0.25rem;
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  touch-action: manipulation;
+}
+
+.calendar-day:active {
+  background: #f0f0f0;
+}
+
+.calendar-day.other-month {
+  opacity: 0.3;
+}
+
+.calendar-day.selected {
+  background: #e0e0e0;
+}
+
+.calendar-day.today {
+  font-weight: bold;
+}
+
+.day-number {
+  font-size: 0.9rem;
+}
+
+.day-indicators {
+  display: flex;
+  gap: 2px;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+
+.event-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* ===== Event List ===== */
+#event-list-section {
+  margin-bottom: 2rem;
+}
+
+.event-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.event-list-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  flex: 1;
+}
+
+#event-list {
+  border: 1px solid #ddd;
+  min-height: 100px;
+}
+
+.event-item {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  gap: 1rem;
+  align-items: start;
+}
+
+.event-item:last-child {
+  border-bottom: none;
+}
+
+.event-color {
+  width: 4px;
+  min-height: 40px;
+  border-radius: 2px;
+}
+
+.event-content {
+  flex: 1;
+}
+
+.event-type {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.event-datetime {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.event-fields {
+  font-size: 0.9rem;
+}
+
+.event-field {
+  margin-bottom: 0.25rem;
+}
+
+.event-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+}
+
+.event-actions button {
+  min-width: 60px;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+  min-height: 36px;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+}
+
+/* ===== Modals ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: #fff;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 8px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.modal-body {
+  padding: 1rem;
+}
+
+.modal-footer {
+  padding: 1rem;
+  border-top: 1px solid #ddd;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* ===== Forms ===== */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* ===== Type Manager ===== */
+.type-list {
+  border: 1px solid #ddd;
+  margin-bottom: 1rem;
+}
+
+.type-item {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.type-item:last-child {
+  border-bottom: none;
+}
+
+.type-color-box {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.type-info {
+  flex: 1;
+}
+
+.type-name {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.type-fields {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.type-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.type-actions button {
+  font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+  min-height: 36px;
+}
+
+.field-builder {
+  border: 1px solid #ddd;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.field-item {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  align-items: start;
+  flex-wrap: wrap;
+}
+
+.field-item input,
+.field-item select {
+  flex: 1;
+  min-width: 100px;
+}
+
+.field-item button {
+  min-width: auto;
+  padding: 0.5rem;
+}
+
+/* ===== Settings ===== */
+.settings-content {
+  padding: 1rem 0;
+}
+
+.setting-group {
+  margin-bottom: 2rem;
+}
+
+.setting-group h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.setting-group button {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+/* ===== Alpine.js Cloak ===== */
+[x-cloak] {
+  display: none !important;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  #app {
+    padding: 0.5rem;
+  }
+
+  header h1 {
+    font-size: 1.2rem;
+  }
+
+  .calendar-day {
+    min-height: 50px;
+    font-size: 0.9rem;
+  }
+
+  .event-item {
+    flex-direction: column;
+  }
+
+  .event-actions {
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .event-actions button {
+    flex: 1;
+  }
+
+  .modal-content {
+    max-height: 95vh;
+    border-radius: 0;
+  }
+}
+
+/* ===== Accessibility ===== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
