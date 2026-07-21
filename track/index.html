@@ -70,18 +70,9 @@
                     <template x-for="ev in selectedDayEvents" :key="ev.id">
                         <div class="event-item">
                             <div class="event-color" :style="`background-color: ${ev.color};`"></div>
-                            <div class="event-content">
-                                <div class="event-type" x-text="ev.typeName"></div>
-                                <div class="event-datetime" x-text="ev.time"></div>
-                                <div class="event-fields" x-show="ev.fields.length">
-                                    <template x-for="f in ev.fields" :key="f.name">
-                                        <div class="event-field">
-                                            <strong x-text="f.name + ':'"></strong>
-                                            <span x-text="' ' + f.value"></span>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
+                            <div class="event-type" x-text="ev.typeName"></div>
+                            <div class="event-datetime" x-text="ev.time"></div>
+                            <div class="event-fields" x-show="ev.fields.length" x-text="ev.fields.map(f => f.name + ': ' + f.value).join(', ')"></div>
                             <div class="event-actions">
                                 <button @click="editEvent(ev.raw)" class="btn-secondary">Edit</button>
                                 <button @click="deleteEvent(ev.id)" class="btn-delete">Delete</button>

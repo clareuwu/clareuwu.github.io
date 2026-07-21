@@ -199,11 +199,12 @@ button:active {
 }
 
 .event-item {
-  padding: 1rem;
+  padding: 0.75rem 1rem;
   border-bottom: 1px solid #ddd;
   display: flex;
-  gap: 1rem;
-  align-items: start;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-start;
 }
 
 .event-item:last-child {
@@ -212,37 +213,34 @@ button:active {
 
 .event-color {
   width: 4px;
-  min-height: 40px;
+  height: 22px;
   border-radius: 2px;
-}
-
-.event-content {
-  flex: 1;
+  flex-shrink: 0;
 }
 
 .event-type {
   font-weight: bold;
-  margin-bottom: 0.25rem;
+  flex-shrink: 0;
 }
 
 .event-datetime {
   font-size: 0.9rem;
   color: #666;
-  margin-bottom: 0.25rem;
+  flex-shrink: 0;
 }
 
 .event-fields {
   font-size: 0.9rem;
-}
-
-.event-field {
-  margin-bottom: 0.25rem;
+  color: #666;
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .event-actions {
   display: flex;
   gap: 0.5rem;
-  flex-direction: column;
+  flex-shrink: 0;
 }
 
 .event-actions button {
@@ -456,12 +454,9 @@ button:active {
     font-size: 0.9rem;
   }
 
-  .event-item {
-    flex-direction: column;
-  }
-
   .event-actions {
     flex-direction: row;
+    flex-basis: 100%;
     width: 100%;
   }
 

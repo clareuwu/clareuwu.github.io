@@ -3,7 +3,7 @@
  * Enables offline functionality and caching
  */
 
-const CACHE_NAME = 'habit-tracker-v4';
+const CACHE_NAME = 'habit-tracker-v6';
 const urlsToCache = [
   '/track/',
   '/track/index.html',
